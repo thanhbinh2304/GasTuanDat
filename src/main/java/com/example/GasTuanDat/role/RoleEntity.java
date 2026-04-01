@@ -1,9 +1,6 @@
 package com.example.GasTuanDat.role;
 
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
-
-import org.checkerframework.checker.units.qual.N;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.annotations.UuidGenerator;

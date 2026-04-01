@@ -21,7 +21,7 @@ public class AccountService {
     private final RoleService roleService;
 
     public AccountEntity create(AccountCreationRequest dto) {
-        RoleEntity employeeRole = roleService.getByName("EMPLOYEE");
+        RoleEntity employeeRole = roleService.getByName("employee");
 
         AccountEntity acc = AccountEntity.builder()
                 .username(dto.getUsername())
