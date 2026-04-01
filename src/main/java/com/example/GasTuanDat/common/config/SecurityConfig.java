@@ -1,15 +1,26 @@
 package com.example.GasTuanDat.common.config;
 
+import java.io.IOException;
+import java.util.Map;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.MediaType;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
+import com.example.GasTuanDat.common.exception.ErrorCode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import jakarta.servlet.http.HttpServletResponse;
 
 import lombok.RequiredArgsConstructor;
 
@@ -30,6 +41,9 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint(authenticationEntryPoint())
+                        .accessDeniedHandler(accessDeniedHandler()))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .requestMatchers("/roles/**").hasRole("ADMIN")
@@ -40,5 +54,27 @@ public class SecurityConfig {
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
+    }
+
+    @Bean
+    public AuthenticationEntryPoint authenticationEntryPoint() {
+        return (request, response, authException) -> writeSecurityError(response, ErrorCode.UNAUTHORIZED);
+    }
+
+    @Bean
+    public AccessDeniedHandler accessDeniedHandler() {
+        return (request, response, accessDeniedException) -> writeSecurityError(response, ErrorCode.FORBIDDEN);
+    }
+
+    private void writeSecurityError(HttpServletResponse response, ErrorCode errorCode) throws IOException {
+        response.setStatus(errorCode.getStatus());
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+
+        Map<String, Object> body = Map.of(
+                "status", errorCode.getStatus(),
+                "error", errorCode.name(),
+                "message", errorCode.getMessage());
+
+        response.getWriter().write(new ObjectMapper().writeValueAsString(body));
     }
 }

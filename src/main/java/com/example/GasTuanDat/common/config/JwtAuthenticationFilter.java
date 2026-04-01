@@ -3,6 +3,7 @@ package com.example.GasTuanDat.common.config;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Locale;
 
 import javax.crypto.SecretKey;
 
@@ -54,10 +55,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String username = claims.getSubject();
             String role = claims.get("role", String.class);
             if (username != null && role != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                String normalizedRole = role.toUpperCase(Locale.ROOT);
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                         username,
                         null,
-                        List.of(new SimpleGrantedAuthority("ROLE_" + role)));
+                        List.of(new SimpleGrantedAuthority("ROLE_" + normalizedRole)));
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }

@@ -28,7 +28,7 @@ public class TokenEntity {
     @UuidGenerator
     private UUID tokenId;
 
-    @Column(name = "\"accountId\"")
+    @Column(name = "\"accountId\"", nullable = false, unique = true)
     private UUID accountId;
 
     @Column(name = "\"refreshToken\"", length = 1200, nullable = false)

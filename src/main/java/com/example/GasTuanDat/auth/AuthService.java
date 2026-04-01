@@ -4,6 +4,7 @@ import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.Date;
+import java.util.Locale;
 
 import javax.crypto.SecretKey;
 
@@ -75,7 +76,8 @@ public class AuthService {
                 .setSubject(account.getUsername())
                 .setIssuedAt(new Date(now))
                 .setExpiration(new Date(accessExpiresAt))
-                .claim("role", account.getRole() != null ? account.getRole().getRoleName() : "EMPLOYEE")
+                .claim("role", (account.getRole() != null ? account.getRole().getRoleName() : "EMPLOYEE")
+                        .toUpperCase(Locale.ROOT))
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
 
@@ -87,12 +89,15 @@ public class AuthService {
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
 
-        tokenRepository.save(TokenEntity.builder()
-                .accountId(account.getAccountId())
-                .refreshToken(refreshToken)
-                .expiresAt(Timestamp.from(Instant.ofEpochMilli(refreshExpiresAt)))
-                .createdAt(Timestamp.from(Instant.ofEpochMilli(now)))
-                .build());
+        TokenEntity tokenEntity = tokenRepository.findByAccountId(account.getAccountId())
+                .orElseGet(() -> TokenEntity.builder()
+                        .accountId(account.getAccountId())
+                        .createdAt(Timestamp.from(Instant.ofEpochMilli(now)))
+                        .build());
+
+        tokenEntity.setRefreshToken(refreshToken);
+        tokenEntity.setExpiresAt(Timestamp.from(Instant.ofEpochMilli(refreshExpiresAt)));
+        tokenRepository.save(tokenEntity);
 
         return LoginResponse.builder()
                 .accessToken(accessToken)
