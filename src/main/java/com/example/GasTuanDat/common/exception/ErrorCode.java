@@ -8,6 +8,7 @@ import lombok.Getter;
 public enum ErrorCode {
     USER_NOT_FOUND(404, "User not found"),
     ROLE_NOT_FOUND(404, "Role not found"),
+    DEPARTMENT_NOT_FOUND(404, "Department not found"),
     EMPLOYEE_NOT_FOUND(404, "Employee not found"),
     INVALID_INPUT(400, "Invalid input"),
     UNAUTHORIZED(401, "Unauthorized"),

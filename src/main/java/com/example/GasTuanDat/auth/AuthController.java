@@ -28,7 +28,7 @@ public class AuthController {
     AuthService authService;
 
     @PostMapping(value = "/create-account", consumes = MediaType.APPLICATION_JSON_VALUE)
-    @Operation(summary = "Create account", description = "Create new account with default EMPLOYEE role")
+    @Operation(summary = "Create account", description = "Create account and auto-create employee/profile records")
     public ApiResponse<AccountEntity> createAccount(@Valid @RequestBody AccountCreationRequest request) {
         return ApiResponse.<AccountEntity>builder()
                 .code(200)

@@ -11,4 +11,6 @@ public interface EmployeeRepository extends JpaRepository<EmployeeEntity, UUID> 
     Optional<EmployeeEntity> findByEmployeeCode(String employeeCode);
 
     Optional<EmployeeEntity> findByAccountId(UUID accountId);
+
+    long countByEmployeeCodeStartingWith(String prefix);
 }
