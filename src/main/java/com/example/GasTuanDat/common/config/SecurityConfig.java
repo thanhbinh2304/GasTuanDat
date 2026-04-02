@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -45,8 +46,11 @@ public class SecurityConfig {
                         .authenticationEntryPoint(authenticationEntryPoint())
                         .accessDeniedHandler(accessDeniedHandler()))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                    .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                    .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
+                    .requestMatchers(HttpMethod.POST, "/auth/create-account").hasRole("ADMIN")
                         .requestMatchers("/roles/**").hasRole("ADMIN")
+                        .requestMatchers("/employees/**").hasRole("ADMIN")
                         .requestMatchers("/accounts/**").hasAnyRole("ADMIN", "EMPLOYEE")
                         .anyRequest().authenticated())
                 .httpBasic(httpBasic -> httpBasic.disable())

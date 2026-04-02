@@ -54,7 +54,7 @@ public class AuthService {
     @Value("${jwt.refreshExpiration:604800}")
     protected long refreshExpirationSeconds;
 
-    public AccountEntity register(AccountCreationRequest dto) {
+        public AccountEntity createAccount(AccountCreationRequest dto) {
         return accountService.create(dto);
     }
 

@@ -27,13 +27,13 @@ import lombok.experimental.FieldDefaults;
 public class AuthController {
     AuthService authService;
 
-    @PostMapping(value = "/register", consumes = MediaType.APPLICATION_JSON_VALUE)
-    @Operation(summary = "Register account", description = "Create new account with default EMPLOYEE role")
-    public ApiResponse<AccountEntity> register(@Valid @RequestBody AccountCreationRequest request) {
+    @PostMapping(value = "/create-account", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Create account", description = "Create new account with default EMPLOYEE role")
+    public ApiResponse<AccountEntity> createAccount(@Valid @RequestBody AccountCreationRequest request) {
         return ApiResponse.<AccountEntity>builder()
                 .code(200)
-                .message("Register success")
-                .data(authService.register(request))
+                .message("Create account success")
+                .data(authService.createAccount(request))
                 .build();
     }
 
