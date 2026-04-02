@@ -12,8 +12,6 @@ import org.springframework.stereotype.Service;
 
 import com.example.GasTuanDat.account.AccountEntity;
 import com.example.GasTuanDat.account.AccountRepository;
-import com.example.GasTuanDat.account.AccountService;
-import com.example.GasTuanDat.account.dtos.AccountCreationRequest;
 import com.example.GasTuanDat.auth.dtos.LoginRequest;
 import com.example.GasTuanDat.auth.dtos.LoginResponse;
 import com.example.GasTuanDat.common.exception.ApiException;
@@ -38,7 +36,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Slf4j
 public class AuthService {
     private final PasswordEncoder passwordEncoder;
-    private final AccountService accountService;
     private final AccountRepository accountRepository;
     private final TokenRepository tokenRepository;
 
@@ -53,10 +50,6 @@ public class AuthService {
     @NonFinal
     @Value("${jwt.refreshExpiration:604800}")
     protected long refreshExpirationSeconds;
-
-    public AccountEntity createAccount(AccountCreationRequest dto) {
-        return accountService.create(dto);
-    }
 
     public LoginResponse login(LoginRequest request) {
         AccountEntity account = accountRepository.findByUsername(request.getUsername())

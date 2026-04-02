@@ -6,8 +6,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.GasTuanDat.account.AccountEntity;
-import com.example.GasTuanDat.account.dtos.AccountCreationRequest;
 import com.example.GasTuanDat.auth.dtos.LoginRequest;
 import com.example.GasTuanDat.auth.dtos.LoginResponse;
 import com.example.GasTuanDat.common.response.ApiResponse;
@@ -26,16 +24,6 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AuthController {
     AuthService authService;
-
-    @PostMapping(value = "/create-account", consumes = MediaType.APPLICATION_JSON_VALUE)
-    @Operation(summary = "Create account", description = "Create account and auto-create employee/profile records")
-    public ApiResponse<AccountEntity> createAccount(@Valid @RequestBody AccountCreationRequest request) {
-        return ApiResponse.<AccountEntity>builder()
-                .code(200)
-                .message("Create account success")
-                .data(authService.createAccount(request))
-                .build();
-    }
 
     @PostMapping(value = "/login", consumes = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "Login", description = "Authenticate and return access token + refresh token")
