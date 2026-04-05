@@ -1,9 +1,10 @@
 spring:
+  config:
+    import: optional:file:.env[.properties]
   application:
     name: GasTuanDat
   datasource:
-    url: jdbc:postgresql://aws-1-ap-southeast-1.pooler.supabase.com:6543/postgres?user=postgres.utjepjaqfwloaxbksmdf&password=leebindz2304
-    
+    url: ${DB_URL}
   jpa:
     hibernate:
       ddl-auto: update   # dev dùng
@@ -13,6 +14,6 @@ server:
   servlet:
     context-path: /api/v1
 jwt:
-  signerKey: 7f373838872006f17e5ab08863742a3dc6864e79e9ce6e80bf81f2229ad2dbb7
+  signerKey: ${APP_SECRET}
   expiration: 3600
   refreshExpiration: 604800
