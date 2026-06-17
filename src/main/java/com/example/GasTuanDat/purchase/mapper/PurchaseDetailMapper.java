@@ -48,7 +48,7 @@ public abstract class PurchaseDetailMapper {
         if (product == null) return null;
         String name = product.getProductName();
         if (product.getProductId() != null) {
-            List<ProductAttributeEntity> attrs = productAttributeRepository.findByProductProductId(product.getProductId());
+            List<ProductAttributeEntity> attrs = product.getAttributesList();
             if (attrs != null && !attrs.isEmpty()) {
                 String attrsStr = attrs.stream()
                         .map(a -> a.getAttributeValue())

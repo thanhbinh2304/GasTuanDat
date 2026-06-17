@@ -39,11 +39,11 @@ public class PurchaseDetailEntity {
     private UUID id;
 
     @JoinColumn(name = "\"purchaseId\"", nullable = false)
-    @ManyToOne
+    @ManyToOne(fetch = jakarta.persistence.FetchType.LAZY)
     private PurchaseOrderEntity purchase;
 
     @JoinColumn(name = "\"productId\"", nullable = false)
-    @ManyToOne
+    @ManyToOne(fetch = jakarta.persistence.FetchType.LAZY)
     private ProductEntity product;
 
     @Column(name = "\"quantity\"", nullable = false)

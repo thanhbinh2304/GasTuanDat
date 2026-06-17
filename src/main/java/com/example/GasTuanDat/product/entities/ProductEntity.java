@@ -20,6 +20,7 @@ import com.example.GasTuanDat.productCategory.entities.ProductCategoryEntity;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@org.hibernate.annotations.SQLRestriction("\"isDeleted\" = false")
 public class ProductEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -47,15 +48,19 @@ public class ProductEntity {
     @Column(name = "\"note\"", columnDefinition = "text")
     private String note;
 
-    @jakarta.persistence.OneToMany(mappedBy = "product", fetch = jakarta.persistence.FetchType.LAZY)
+    @Column(name = "\"isDeleted\"", nullable = false, columnDefinition = "boolean default false")
+    @Builder.Default
+    private boolean isDeleted = false;
+
+    @jakarta.persistence.OneToMany(mappedBy = "product", fetch = jakarta.persistence.FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @org.hibernate.annotations.BatchSize(size = 50)
     private java.util.List<com.example.GasTuanDat.stock.entities.InventoryEntity> inventoryList;
 
-    @jakarta.persistence.OneToMany(mappedBy = "product", fetch = jakarta.persistence.FetchType.LAZY)
+    @jakarta.persistence.OneToMany(mappedBy = "product", fetch = jakarta.persistence.FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @org.hibernate.annotations.BatchSize(size = 50)
     private java.util.List<com.example.GasTuanDat.productPrice.entities.ProductPriceEntity> priceTiers;
 
-    @jakarta.persistence.OneToMany(mappedBy = "product", fetch = jakarta.persistence.FetchType.LAZY)
+    @jakarta.persistence.OneToMany(mappedBy = "product", fetch = jakarta.persistence.FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @org.hibernate.annotations.BatchSize(size = 50)
     private java.util.List<com.example.GasTuanDat.productAttribute.entities.ProductAttributeEntity> attributesList;
 }

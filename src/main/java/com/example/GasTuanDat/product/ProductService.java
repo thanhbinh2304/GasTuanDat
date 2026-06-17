@@ -271,71 +271,137 @@ public class ProductService {
 
         ProductEntity saved = productRepository.save(product);
 
-        // Delete existing and rewrite warehouses
+        // Update warehouses without delete-and-recreate
         if (request.getWarehouses() != null) {
-            inventoryRepository.deleteByProductProductId(productId);
-            inventoryRepository.flush();
+            java.util.List<InventoryEntity> currentInventories = product.getInventoryList();
+            if (currentInventories == null) {
+                currentInventories = new java.util.ArrayList<>();
+                product.setInventoryList(currentInventories);
+            }
+            
+            java.util.Map<UUID, Integer> requestStocks = new java.util.HashMap<>();
             for (ProductStockDto w : request.getWarehouses()) {
                 if (w.getStockId() != null) {
-                    StockEntity stock = stockRepository.findById(w.getStockId())
+                    requestStocks.put(w.getStockId(), w.getQuantity() != null ? w.getQuantity() : 0);
+                }
+            }
+
+            // Remove absent
+            currentInventories.removeIf(inv -> !requestStocks.containsKey(inv.getStock().getStockId()));
+
+            // Update existing or Add new
+            for (java.util.Map.Entry<UUID, Integer> entry : requestStocks.entrySet()) {
+                UUID stockId = entry.getKey();
+                Integer quantity = entry.getValue();
+
+                java.util.Optional<InventoryEntity> existing = currentInventories.stream()
+                        .filter(inv -> inv.getStock().getStockId().equals(stockId))
+                        .findFirst();
+
+                if (existing.isPresent()) {
+                    existing.get().setQuantity(quantity);
+                } else {
+                    StockEntity stock = stockRepository.findById(stockId)
                         .orElseThrow(() -> new ApiException(ErrorCode.INVALID_INPUT));
                     InventoryEntity inv = InventoryEntity.builder()
-                        .product(saved)
+                        .product(product)
                         .stock(stock)
-                        .quantity(w.getQuantity() != null ? w.getQuantity() : 0)
+                        .quantity(quantity)
                         .build();
-                    inventoryRepository.save(inv);
+                    currentInventories.add(inv);
                 }
             }
         }
 
-        // Delete existing and rewrite price tiers
+        // Update price tiers without delete-and-recreate
         if (request.getPriceTiers() != null) {
-            productPriceRepository.deleteByProductProductId(productId);
-            productPriceRepository.flush();
+            java.util.List<ProductPriceEntity> currentPrices = product.getPriceTiers();
+            if (currentPrices == null) {
+                currentPrices = new java.util.ArrayList<>();
+                product.setPriceTiers(currentPrices);
+            }
+
+            java.util.Map<UUID, BigDecimal> requestPrices = new java.util.HashMap<>();
             for (ProductPriceDto p : request.getPriceTiers()) {
                 if (p.getPriceListId() != null) {
-                    PriceListEntity priceList = priceListRepository.findById(p.getPriceListId())
+                    requestPrices.put(p.getPriceListId(), p.getPrice() != null ? p.getPrice() : BigDecimal.ZERO);
+                }
+            }
+
+            currentPrices.removeIf(pp -> !requestPrices.containsKey(pp.getPriceList().getPriceListId()));
+
+            for (java.util.Map.Entry<UUID, BigDecimal> entry : requestPrices.entrySet()) {
+                UUID priceListId = entry.getKey();
+                BigDecimal price = entry.getValue();
+
+                java.util.Optional<ProductPriceEntity> existing = currentPrices.stream()
+                        .filter(pp -> pp.getPriceList().getPriceListId().equals(priceListId))
+                        .findFirst();
+
+                if (existing.isPresent()) {
+                    existing.get().setSellingPrice(price);
+                } else {
+                    PriceListEntity priceList = priceListRepository.findById(priceListId)
                         .orElseThrow(() -> new ApiException(ErrorCode.INVALID_INPUT));
                     ProductPriceEntity pp = ProductPriceEntity.builder()
-                        .product(saved)
+                        .product(product)
                         .priceList(priceList)
-                        .sellingPrice(p.getPrice() != null ? p.getPrice() : BigDecimal.ZERO)
+                        .sellingPrice(price)
                         .build();
-                    productPriceRepository.save(pp);
+                    currentPrices.add(pp);
                 }
             }
         }
 
-        // Delete existing and rewrite attributes
+        // Update attributes without delete-and-recreate
         if (request.getAttributesList() != null) {
-            productAttributeRepository.deleteByProductProductId(productId);
-            productAttributeRepository.flush();
+            java.util.List<ProductAttributeEntity> currentAttributes = product.getAttributesList();
+            if (currentAttributes == null) {
+                currentAttributes = new java.util.ArrayList<>();
+                product.setAttributesList(currentAttributes);
+            }
+
+            java.util.Map<UUID, String> requestAttributes = new java.util.HashMap<>();
             for (ProductAttributeDto a : request.getAttributesList()) {
                 if (a.getAttributeId() != null) {
-                    AttributeEntity attr = attributeRepository.findById(a.getAttributeId())
+                    requestAttributes.put(a.getAttributeId(), a.getValue() != null ? a.getValue() : "");
+                }
+            }
+
+            currentAttributes.removeIf(pa -> !requestAttributes.containsKey(pa.getAttribute().getAttributeId()));
+
+            for (java.util.Map.Entry<UUID, String> entry : requestAttributes.entrySet()) {
+                UUID attributeId = entry.getKey();
+                String value = entry.getValue();
+
+                java.util.Optional<ProductAttributeEntity> existing = currentAttributes.stream()
+                        .filter(pa -> pa.getAttribute().getAttributeId().equals(attributeId))
+                        .findFirst();
+
+                if (existing.isPresent()) {
+                    existing.get().setAttributeValue(value);
+                } else {
+                    AttributeEntity attr = attributeRepository.findById(attributeId)
                         .orElseThrow(() -> new ApiException(ErrorCode.INVALID_INPUT));
                     ProductAttributeEntity pa = ProductAttributeEntity.builder()
-                        .product(saved)
+                        .product(product)
                         .attribute(attr)
-                        .attributeValue(a.getValue() != null ? a.getValue() : "")
+                        .attributeValue(value)
                         .build();
-                    productAttributeRepository.save(pa);
+                    currentAttributes.add(pa);
                 }
             }
         }
 
-        return saved;
+        return productRepository.save(product);
     }
 
     @Transactional
     @CacheEvict(value = "products", allEntries = true)
     public void delete(UUID productId) {
         ProductEntity product = getById(productId);
-        inventoryRepository.deleteByProductProductId(productId);
-        productPriceRepository.deleteByProductProductId(productId);
-        productAttributeRepository.deleteByProductProductId(productId);
-        productRepository.delete(product);
+        product.setDeleted(true);
+        productRepository.save(product);
     }
 
     @Cacheable(value = "products", key = "{#keyword, #productCategory, #stock, #priceList, #productAttribute, #attributeValue, #page, #pageSize}", sync = true)

@@ -4,13 +4,13 @@ import concurrent.futures
 import statistics
 
 # Cấu hình test
-BASE_URL = "http://localhost:8080/api/v1/products?keyword=sp" # Thay đổi cổng và API nếu cần
-TOKEN = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbjEyMyIsImlhdCI6MTc4MTYzNDQ0OCwiZXhwIjoxNzgxNjM4MDQ4LCJyb2xlIjoiQURNSU4ifQ.LaflujfpJ5X9sJ63JOhTqNAtgwHL1G-nuOqcllS0iBo" # TODO: Copy JWT token của tài khoản đã đăng nhập vào đây
+BASE_URL = "http://localhost:8080/api/v1/purchase-orders" # Thay đổi cổng và API nếu cần
+TOKEN = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbjEyMyIsImlhdCI6MTc4MTcxMzk1NSwiZXhwIjoxNzgxNzE3NTU1LCJyb2xlIjoiQURNSU4ifQ.1ULlMBDwBsvWHCgmajmnTky9bjucKu_exUne21Pq19o" # TODO: Copy JWT token của tài khoản đã đăng nhập vào đây
 HEADERS = {
     "Authorization": f"Bearer {TOKEN}"
 }
-CONCURRENT_USERS = 1000 # Số lượng người dùng gửi request đồng thời
-TOTAL_REQUESTS = 1000 # Tổng số lượng request
+CONCURRENT_USERS = 20 # Số lượng người dùng gửi request đồng thời
+TOTAL_REQUESTS = 20 # Tổng số lượng request
 
 from requests.adapters import HTTPAdapter
 

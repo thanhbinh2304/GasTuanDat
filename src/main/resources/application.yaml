@@ -30,7 +30,10 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
-    show-sql: false
+    properties:
+      hibernate:
+        default_batch_fetch_size: 50
+    show-sql: true
 app:
   ownerEmail: ${OWNER_EMAIL:${APP_OWNER_EMAIL:${MAIL_FROM_ADDRESS}}}
   mailFrom: ${APP_MAIL_FROM:${MAIL_FROM_ADDRESS:${MAIL_USERNAME}}}

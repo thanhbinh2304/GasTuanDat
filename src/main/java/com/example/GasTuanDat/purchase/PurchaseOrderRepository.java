@@ -19,11 +19,13 @@ import java.util.List;
 public interface PurchaseOrderRepository extends JpaRepository<PurchaseOrderEntity, UUID> {
     boolean existsByPurchaseCodeIgnoreCase(String purchaseCode);
 
-    @Query("""
+
+
+    @Query(value = """
             select po from PurchaseOrderEntity po
-            left join po.supplier sup
-            left join po.stock st
-            left join po.employee emp
+            left join fetch po.supplier sup
+            left join fetch po.stock st
+            left join fetch po.employee emp
             where (:keyword is null or lower(po.purchaseCode) like lower(concat('%', cast(:keyword as string), '%')))
             and (cast(:startDate as timestamp) is null or po.purchaseDate >= :startDate)
             and (cast(:endDate as timestamp) is null or po.purchaseDate <= :endDate)
@@ -31,7 +33,16 @@ public interface PurchaseOrderRepository extends JpaRepository<PurchaseOrderEnti
             and (cast(:stockId as uuid) is null or st.stockId = :stockId)
             and (cast(:employeeId as uuid) is null or emp.employeeId = :employeeId)
             and (coalesce(:orderType, '') = '' or po.orderType = :orderType)
-            order by po.purchaseDate desc""")
+            order by po.purchaseDate desc""",
+            countQuery = """
+            select count(po.purchaseId) from PurchaseOrderEntity po
+            where (:keyword is null or lower(po.purchaseCode) like lower(concat('%', cast(:keyword as string), '%')))
+            and (cast(:startDate as timestamp) is null or po.purchaseDate >= :startDate)
+            and (cast(:endDate as timestamp) is null or po.purchaseDate <= :endDate)
+            and (cast(:supplierId as uuid) is null or po.supplier.supplierId = :supplierId)
+            and (cast(:stockId as uuid) is null or po.stock.stockId = :stockId)
+            and (cast(:employeeId as uuid) is null or po.employee.employeeId = :employeeId)
+            and (coalesce(:orderType, '') = '' or po.orderType = :orderType)""")
     Page<PurchaseOrderEntity> searchPurchaseOrders(
             @Param("keyword") String keyword,
             @Param("startDate") OffsetDateTime startDate,

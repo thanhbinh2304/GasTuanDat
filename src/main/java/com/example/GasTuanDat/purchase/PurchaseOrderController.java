@@ -49,28 +49,6 @@ public class PurchaseOrderController {
     }
 
     @GetMapping
-    @Operation(summary = "Get purchase order list")
-    public ApiResponse<List<PurchaseOrderResponse>> getAll(
-            @RequestParam(defaultValue = "1", required = false) int page,
-            @RequestParam(defaultValue = "10", required = false) int limit
-    ) {
-        PageResult<PurchaseOrderResponse> result = purchaseOrderService.getAll(page, limit);
-        Map<String, Object> pagination = new HashMap<>();
-        pagination.put("page", result.getPage());
-        pagination.put("limit", result.getSize());
-        pagination.put("total", result.getTotalElements());
-        pagination.put("totalPages", result.getTotalPages());
-
-        return ApiResponse.<List<PurchaseOrderResponse>>builder()
-                .success(true)
-                .code(200)
-                .message("Get purchase order list success")
-                .data(result.getContent())
-                .pagination(pagination)
-                .build();
-    }
-
-    @GetMapping("/search")
     @Operation(summary = "Search purchase orders with pagination")
     public ApiResponse<List<PurchaseOrderResponse>> searchPurchaseOrder(
             @RequestParam(required = false) String keyword,

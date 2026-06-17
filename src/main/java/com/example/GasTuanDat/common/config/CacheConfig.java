@@ -22,8 +22,6 @@ public class CacheConfig {
 
         cacheManager.setCaches(Arrays.asList(
             buildCache("products", 1, TimeUnit.HOURS, 500),
-            buildCache("purchaseOrders", 30, TimeUnit.MINUTES, 500),
-            buildCache("saleInvoices", 30, TimeUnit.MINUTES, 500),
             buildCache("reports", 30, TimeUnit.MINUTES, 100)
         ));
 

@@ -29,77 +29,77 @@ public class ReportController {
 
     @GetMapping("/products/import")
     public ResponseEntity<List<ProductImportReportDTO>> getImportReport(
-            @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-            @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+            @RequestParam(value = "startDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(value = "endDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
         
-        OffsetDateTime start = startDate.atStartOfDay().atOffset(ZoneOffset.ofHours(7));
-        OffsetDateTime end = endDate.atTime(23, 59, 59).atOffset(ZoneOffset.ofHours(7));
+        OffsetDateTime start = startDate != null ? startDate.atStartOfDay().atOffset(ZoneOffset.ofHours(7)) : OffsetDateTime.of(2000, 1, 1, 0, 0, 0, 0, ZoneOffset.ofHours(7));
+        OffsetDateTime end = endDate != null ? endDate.atTime(23, 59, 59).atOffset(ZoneOffset.ofHours(7)) : OffsetDateTime.of(2100, 1, 1, 0, 0, 0, 0, ZoneOffset.ofHours(7));
         
         return ResponseEntity.ok(reportService.getImportReport(start, end));
     }
 
     @GetMapping("/products/export")
     public ResponseEntity<List<ProductExportReportDTO>> getExportReport(
-            @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-            @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+            @RequestParam(value = "startDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(value = "endDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
         
-        OffsetDateTime start = startDate.atStartOfDay().atOffset(ZoneOffset.ofHours(7));
-        OffsetDateTime end = endDate.atTime(23, 59, 59).atOffset(ZoneOffset.ofHours(7));
+        OffsetDateTime start = startDate != null ? startDate.atStartOfDay().atOffset(ZoneOffset.ofHours(7)) : OffsetDateTime.of(2000, 1, 1, 0, 0, 0, 0, ZoneOffset.ofHours(7));
+        OffsetDateTime end = endDate != null ? endDate.atTime(23, 59, 59).atOffset(ZoneOffset.ofHours(7)) : OffsetDateTime.of(2100, 1, 1, 0, 0, 0, 0, ZoneOffset.ofHours(7));
         
         return ResponseEntity.ok(reportService.getExportReport(start, end));
     }
 
     @GetMapping("/invoices/export-summary")
     public ResponseEntity<List<SaleInvoiceReportDTO>> getExportSummaryReport(
-            @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-            @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+            @RequestParam(value = "startDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(value = "endDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
 
-        OffsetDateTime start = startDate.atStartOfDay().atOffset(ZoneOffset.ofHours(7));
-        OffsetDateTime end = endDate.atTime(23, 59, 59).atOffset(ZoneOffset.ofHours(7));
+        OffsetDateTime start = startDate != null ? startDate.atStartOfDay().atOffset(ZoneOffset.ofHours(7)) : OffsetDateTime.of(2000, 1, 1, 0, 0, 0, 0, ZoneOffset.ofHours(7));
+        OffsetDateTime end = endDate != null ? endDate.atTime(23, 59, 59).atOffset(ZoneOffset.ofHours(7)) : OffsetDateTime.of(2100, 1, 1, 0, 0, 0, 0, ZoneOffset.ofHours(7));
 
         return ResponseEntity.ok(reportService.getExportSummaryReport(start, end));
     }
 
     @GetMapping("/invoices/import-summary")
     public ResponseEntity<List<PurchaseOrderReportDTO>> getImportSummaryReport(
-            @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-            @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+            @RequestParam(value = "startDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(value = "endDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
 
-        OffsetDateTime start = startDate.atStartOfDay().atOffset(ZoneOffset.ofHours(7));
-        OffsetDateTime end = endDate.atTime(23, 59, 59).atOffset(ZoneOffset.ofHours(7));
+        OffsetDateTime start = startDate != null ? startDate.atStartOfDay().atOffset(ZoneOffset.ofHours(7)) : OffsetDateTime.of(2000, 1, 1, 0, 0, 0, 0, ZoneOffset.ofHours(7));
+        OffsetDateTime end = endDate != null ? endDate.atTime(23, 59, 59).atOffset(ZoneOffset.ofHours(7)) : OffsetDateTime.of(2100, 1, 1, 0, 0, 0, 0, ZoneOffset.ofHours(7));
 
         return ResponseEntity.ok(reportService.getImportSummaryReport(start, end));
     }
 
     @GetMapping("/gas-books/summary")
     public ResponseEntity<List<GasBookReportDTO>> getGasBookSummaryReport(
-            @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-            @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+            @RequestParam(value = "startDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(value = "endDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
 
-        OffsetDateTime start = startDate.atStartOfDay().atOffset(ZoneOffset.ofHours(7));
-        OffsetDateTime end = endDate.atTime(23, 59, 59).atOffset(ZoneOffset.ofHours(7));
+        OffsetDateTime start = startDate != null ? startDate.atStartOfDay().atOffset(ZoneOffset.ofHours(7)) : OffsetDateTime.of(2000, 1, 1, 0, 0, 0, 0, ZoneOffset.ofHours(7));
+        OffsetDateTime end = endDate != null ? endDate.atTime(23, 59, 59).atOffset(ZoneOffset.ofHours(7)) : OffsetDateTime.of(2100, 1, 1, 0, 0, 0, 0, ZoneOffset.ofHours(7));
 
         return ResponseEntity.ok(reportService.getGasBookSummaryReport(start, end));
     }
 
     @GetMapping("/customers/summary")
     public ResponseEntity<List<com.example.GasTuanDat.report.dtos.CustomerReportDTO>> getCustomerSummaryReport(
-            @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-            @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+            @RequestParam(value = "startDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(value = "endDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
 
-        OffsetDateTime start = startDate.atStartOfDay().atOffset(ZoneOffset.ofHours(7));
-        OffsetDateTime end = endDate.atTime(23, 59, 59).atOffset(ZoneOffset.ofHours(7));
+        OffsetDateTime start = startDate != null ? startDate.atStartOfDay().atOffset(ZoneOffset.ofHours(7)) : OffsetDateTime.of(2000, 1, 1, 0, 0, 0, 0, ZoneOffset.ofHours(7));
+        OffsetDateTime end = endDate != null ? endDate.atTime(23, 59, 59).atOffset(ZoneOffset.ofHours(7)) : OffsetDateTime.of(2100, 1, 1, 0, 0, 0, 0, ZoneOffset.ofHours(7));
 
         return ResponseEntity.ok(reportService.getCustomerSummaryReport(start, end));
     }
 
     @GetMapping("/suppliers/summary")
     public ResponseEntity<List<com.example.GasTuanDat.report.dtos.SupplierReportDTO>> getSupplierSummaryReport(
-            @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-            @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+            @RequestParam(value = "startDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(value = "endDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
 
-        OffsetDateTime start = startDate.atStartOfDay().atOffset(ZoneOffset.ofHours(7));
-        OffsetDateTime end = endDate.atTime(23, 59, 59).atOffset(ZoneOffset.ofHours(7));
+        OffsetDateTime start = startDate != null ? startDate.atStartOfDay().atOffset(ZoneOffset.ofHours(7)) : OffsetDateTime.of(2000, 1, 1, 0, 0, 0, 0, ZoneOffset.ofHours(7));
+        OffsetDateTime end = endDate != null ? endDate.atTime(23, 59, 59).atOffset(ZoneOffset.ofHours(7)) : OffsetDateTime.of(2100, 1, 1, 0, 0, 0, 0, ZoneOffset.ofHours(7));
 
         return ResponseEntity.ok(reportService.getSupplierSummaryReport(start, end));
     }

@@ -61,7 +61,7 @@ public class SaleInvoiceService {
     private final InventoryRepository inventoryRepository;
 
     @Transactional
-    @CacheEvict(value = {"saleInvoices", "reports"}, allEntries = true)
+    @CacheEvict(value = "reports", allEntries = true)
     public SaleInvoiceResponse create(SaleInvoiceCreateRequest request) {
         SaleInvoiceEntity entity = saleInvoiceMapper.toEntity(request);
         
@@ -129,7 +129,7 @@ public class SaleInvoiceService {
     }
 
     @Transactional
-    @CacheEvict(value = {"saleInvoices", "reports"}, allEntries = true)
+    @CacheEvict(value = "reports", allEntries = true)
     public SaleInvoiceResponse update(UUID invoiceId, SaleInvoiceUpdateRequest request) {
         SaleInvoiceEntity entity = saleInvoiceRepository.findById(invoiceId)
                 .orElseThrow(() -> new ApiException(ErrorCode.SALE_INVOICE_NOT_FOUND));
@@ -210,14 +210,14 @@ public class SaleInvoiceService {
         return mapToResponseWithDetails(saved);
     }
 
-    @Cacheable(value = "saleInvoices", key = "#invoiceId")
+
     public SaleInvoiceResponse getById(UUID invoiceId) {
         SaleInvoiceEntity entity = saleInvoiceRepository.findById(invoiceId)
                 .orElseThrow(() -> new ApiException(ErrorCode.SALE_INVOICE_NOT_FOUND));
         return mapToResponseWithDetails(entity);
     }
 
-    @Cacheable(value = "saleInvoices", key = "{#keyword, #startDate, #endDate, #customerId, #stockId, #employeeId, #orderType, #customerGroupId, #page, #limit}")
+
     public PageResult<SaleInvoiceResponse> search(
             String keyword,
             OffsetDateTime startDate,
@@ -240,7 +240,7 @@ public class SaleInvoiceService {
     }
 
     @Transactional
-    @CacheEvict(value = {"saleInvoices", "reports"}, allEntries = true)
+    @CacheEvict(value = "reports", allEntries = true)
     public void delete(UUID invoiceId) {
         SaleInvoiceEntity entity = saleInvoiceRepository.findById(invoiceId)
                 .orElseThrow(() -> new ApiException(ErrorCode.SALE_INVOICE_NOT_FOUND));
@@ -345,8 +345,31 @@ public class SaleInvoiceService {
     }
 
     private PageResult<SaleInvoiceResponse> buildPageResult(Page<SaleInvoiceEntity> pageResult) {
+        List<SaleInvoiceEntity> content = pageResult.getContent();
+        if (content.isEmpty()) {
+            return PageResult.<SaleInvoiceResponse>builder()
+                    .content(java.util.Collections.emptyList())
+                    .page(pageResult.getNumber() + 1)
+                    .size(pageResult.getSize())
+                    .totalElements(pageResult.getTotalElements())
+                    .totalPages(pageResult.getTotalPages())
+                    .build();
+        }
+
+        List<UUID> invoiceIds = content.stream().map(SaleInvoiceEntity::getInvoiceId).collect(Collectors.toList());
+        List<SaleInvoiceDetailEntity> allDetails = saleInvoiceDetailRepository.findByInvoice_InvoiceIdIn(invoiceIds);
+        java.util.Map<UUID, List<SaleInvoiceDetailEntity>> detailsByInvoice = allDetails.stream()
+                .collect(Collectors.groupingBy(d -> d.getInvoice().getInvoiceId()));
+
+        List<SaleInvoiceResponse> responses = content.stream().map(entity -> {
+            SaleInvoiceResponse response = saleInvoiceMapper.toResponse(entity);
+            List<SaleInvoiceDetailEntity> details = detailsByInvoice.getOrDefault(entity.getInvoiceId(), java.util.Collections.emptyList());
+            response.setDetails(details.stream().map(saleInvoiceDetailMapper::toResponse).collect(Collectors.toList()));
+            return response;
+        }).collect(Collectors.toList());
+
         return PageResult.<SaleInvoiceResponse>builder()
-                .content(pageResult.getContent().stream().map(this::mapToResponseWithDetails).collect(Collectors.toList()))
+                .content(responses)
                 .page(pageResult.getNumber() + 1)
                 .size(pageResult.getSize())
                 .totalElements(pageResult.getTotalElements())

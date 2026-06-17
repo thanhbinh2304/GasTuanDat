@@ -40,11 +40,11 @@ public class SaleInvoiceDetailEntity {
     private UUID id;
 
     @JoinColumn(name = "\"invoiceId\"", nullable = false)
-    @ManyToOne
+    @ManyToOne(fetch = jakarta.persistence.FetchType.LAZY)
     private SaleInvoiceEntity invoice;
 
     @JoinColumn(name = "\"productId\"", nullable = false)
-    @ManyToOne
+    @ManyToOne(fetch = jakarta.persistence.FetchType.LAZY)
     private ProductEntity product;
 
     @Column(name = "\"quantity\"", nullable = false)

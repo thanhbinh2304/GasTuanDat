@@ -17,6 +17,8 @@ import java.util.List;
 @Repository
 public interface PurchaseDetailRepository extends JpaRepository<PurchaseDetailEntity, UUID> {
     List<PurchaseDetailEntity> findByPurchasePurchaseId(UUID purchaseId);
+    @org.springframework.data.jpa.repository.EntityGraph(attributePaths = {"product", "product.category"})
+    List<PurchaseDetailEntity> findByPurchase_PurchaseIdIn(List<UUID> purchaseIds);
     void deleteByPurchase_PurchaseId(UUID purchaseId);
 
     @Query(value = """

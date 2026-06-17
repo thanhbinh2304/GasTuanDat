@@ -56,7 +56,7 @@ public class PurchaseOrderService {
         }
     }
 
-    @CacheEvict(value = {"purchaseOrders", "reports"}, allEntries = true)
+    @CacheEvict(value = "reports", allEntries = true)
     public PurchaseOrderResponse create(PurchaseOrderCreateRequest request) {
         PurchaseOrderEntity entity = purchaseOrderMapper.toEntity(request);
         if (entity.getPurchaseDate() == null) {
@@ -85,24 +85,16 @@ public class PurchaseOrderService {
         return generatedCode;
     }
 
-    @Cacheable(value = "purchaseOrders", key = "#purchaseId")
+
     public PurchaseOrderResponse getById(UUID purchaseId) {
         return purchaseOrderRepository.findById(purchaseId)
                 .map(purchaseOrderMapper::toResponse)
                 .orElseThrow(() -> new ApiException(ErrorCode.PURCHASE_ORDER_NOT_FOUND));
     }
 
-    @Cacheable(value = "purchaseOrders", key = "{'all', #page, #limit}")
-    public PageResult<PurchaseOrderResponse> getAll(Integer page, Integer limit) {
-        int pageNumber = page == null || page < 1 ? 0 : page - 1;
-        int pageSize = limit == null || limit <= 0 ? 10 : limit;
-        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("purchaseDate").descending());
 
-        Page<PurchaseOrderEntity> purchaseOrderPage = purchaseOrderRepository.findAll(pageable);
-        return buildPageResult(purchaseOrderPage);
-    }
 
-    @Cacheable(value = "purchaseOrders", key = "{#keyword, #startDate, #endDate, #supplierId, #stockId, #employeeId, #orderType, #page, #limit}")
+
     public PageResult<PurchaseOrderResponse> search(
             String keyword,
             OffsetDateTime startDate,
@@ -122,7 +114,7 @@ public class PurchaseOrderService {
         return buildPageResult(purchaseOrderPage);
     }
 
-    @CacheEvict(value = {"purchaseOrders", "reports"}, allEntries = true)
+    @CacheEvict(value = "reports", allEntries = true)
     public PurchaseOrderResponse update(UUID purchaseId, PurchaseOrderUpdateRequest request) {
         PurchaseOrderEntity entity = purchaseOrderRepository.findById(purchaseId)
                 .orElseThrow(() -> new ApiException(ErrorCode.PURCHASE_ORDER_NOT_FOUND));
@@ -242,7 +234,7 @@ public class PurchaseOrderService {
     }
 
     @org.springframework.transaction.annotation.Transactional
-    @CacheEvict(value = {"purchaseOrders", "reports"}, allEntries = true)
+    @CacheEvict(value = "reports", allEntries = true)
     public void delete(UUID purchaseId) {
         PurchaseOrderEntity entity = purchaseOrderRepository.findById(purchaseId)
                 .orElseThrow(() -> new ApiException(ErrorCode.PURCHASE_ORDER_NOT_FOUND));

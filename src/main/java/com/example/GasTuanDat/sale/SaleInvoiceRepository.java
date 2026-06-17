@@ -23,12 +23,16 @@ public interface SaleInvoiceRepository extends JpaRepository<SaleInvoiceEntity, 
 
     boolean existsByInvoiceCodeIgnoreCase(String invoiceCode);
 
-    @Query("""
+    @org.springframework.data.jpa.repository.EntityGraph(attributePaths = {"customer", "customer.customerGroup", "stock", "employee", "gasBook"})
+    Page<SaleInvoiceEntity> findAll(Pageable pageable);
+
+    @Query(value = """
             select si from SaleInvoiceEntity si
-            left join si.customer c
-            left join c.customerGroup cg
-            left join si.stock s
-            left join si.employee e
+            left join fetch si.customer c
+            left join fetch c.customerGroup cg
+            left join fetch si.stock s
+            left join fetch si.employee e
+            left join fetch si.gasBook gb
             where (:keyword is null or lower(si.invoiceCode) like lower(concat('%', cast(:keyword as string), '%')))
             and (cast(:startDate as timestamp) is null or si.invoiceDate >= :startDate)
             and (cast(:endDate as timestamp) is null or si.invoiceDate <= :endDate)
@@ -37,7 +41,19 @@ public interface SaleInvoiceRepository extends JpaRepository<SaleInvoiceEntity, 
             and (cast(:employeeId as uuid) is null or e.employeeId = :employeeId)
             and (coalesce(:orderType, '') = '' or si.orderType = :orderType)
             and (cast(:customerGroupId as uuid) is null or cg.customerGroupId = :customerGroupId)
-            order by si.invoiceDate desc""")
+            order by si.invoiceDate desc""",
+            countQuery = """
+            select count(si.invoiceId) from SaleInvoiceEntity si
+            left join si.customer c
+            left join c.customerGroup cg
+            where (:keyword is null or lower(si.invoiceCode) like lower(concat('%', cast(:keyword as string), '%')))
+            and (cast(:startDate as timestamp) is null or si.invoiceDate >= :startDate)
+            and (cast(:endDate as timestamp) is null or si.invoiceDate <= :endDate)
+            and (cast(:customerId as uuid) is null or c.customerId = :customerId)
+            and (cast(:stockId as uuid) is null or si.stock.stockId = :stockId)
+            and (cast(:employeeId as uuid) is null or si.employee.employeeId = :employeeId)
+            and (coalesce(:orderType, '') = '' or si.orderType = :orderType)
+            and (cast(:customerGroupId as uuid) is null or cg.customerGroupId = :customerGroupId)""")
     Page<SaleInvoiceEntity> searchSaleInvoices(
             @org.springframework.data.repository.query.Param("keyword") String keyword,
             @org.springframework.data.repository.query.Param("startDate") java.time.OffsetDateTime startDate,

@@ -20,6 +20,9 @@ public interface SaleInvoiceDetailRepository extends JpaRepository<SaleInvoiceDe
     
     java.util.List<SaleInvoiceDetailEntity> findByInvoice_InvoiceId(UUID invoiceId);
     
+    @org.springframework.data.jpa.repository.EntityGraph(attributePaths = {"product", "product.category"})
+    java.util.List<SaleInvoiceDetailEntity> findByInvoice_InvoiceIdIn(List<UUID> invoiceIds);
+    
     void deleteByInvoice_InvoiceId(UUID invoiceId);
 
     @Query(value = """
