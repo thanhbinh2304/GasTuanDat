@@ -1,0 +1,14 @@
+package com.example.GasTuanDat.auth;
+
+import com.example.GasTuanDat.auth.entity.TokenEntity;
+import java.util.Optional;
+import java.util.UUID;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface TokenRepository extends JpaRepository<TokenEntity, UUID> {
+    Optional<TokenEntity> findByAccountId(UUID accountId);
+
+    void deleteByAccountId(UUID accountId);
+}

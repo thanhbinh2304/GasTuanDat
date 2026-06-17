@@ -1,0 +1,27 @@
+package com.example.GasTuanDat.account.mapper;
+
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+
+import com.example.GasTuanDat.account.entity.AccountEntity;
+import com.example.GasTuanDat.account.dtos.AccountCreationRequest;
+import com.example.GasTuanDat.account.dtos.AccountResponse;
+
+@Mapper(componentModel = "spring")
+public interface AccountMapper {
+    @Mapping(target = "accountId", ignore = true)
+    @Mapping(target = "status", ignore = true)
+    @Mapping(target = "role", ignore = true)
+    @Mapping(target = "employee", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "deleteAt", ignore = true)
+    AccountEntity toAccount(AccountCreationRequest request);
+
+    @Mapping(target = "roleId", source = "role.roleId")
+    @Mapping(target = "roleName", source = "role.roleName")
+    @Mapping(target = "employeeId", source = "employee.employeeId")
+    @Mapping(target = "employeeCode", source = "employee.employeeCode")
+    @Mapping(target = "employeeName", source = "employee.fullName")
+    AccountResponse toAccountResponse(AccountEntity account);
+}

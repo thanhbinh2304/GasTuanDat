@@ -1,0 +1,48 @@
+spring:
+  config:
+    import: optional:file:.env[.properties]
+  application:
+    name: GasTuanDat
+  datasource:
+    url: ${DB_URL}
+    hikari:
+      pool-name: GasTuanDatHikari
+      minimum-idle: 5
+      maximum-pool-size: 20
+      connection-timeout: 30000
+      validation-timeout: 5000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+      keepalive-time: 300000
+      auto-commit: false
+
+  mail:
+    host: ${MAIL_HOST:}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+app:
+  ownerEmail: ${OWNER_EMAIL:${APP_OWNER_EMAIL:${MAIL_FROM_ADDRESS}}}
+  mailFrom: ${APP_MAIL_FROM:${MAIL_FROM_ADDRESS:${MAIL_USERNAME}}}
+  backendBaseUrl: ${APP_BACKEND_URL:http://localhost:8080/api/v1}
+server:
+  port: 8080
+  tomcat:
+    threads:
+      max: 50
+  servlet:
+    context-path: /api/v1
+jwt:
+  signerKey: ${APP_SECRET}
+  expiration: 3600
+  refreshExpiration: 604800
