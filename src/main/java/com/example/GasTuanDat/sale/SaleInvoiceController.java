@@ -30,9 +30,10 @@ import lombok.RequiredArgsConstructor;
 public class SaleInvoiceController {
 
     private final SaleInvoiceService saleInvoiceService;
+    private final SaleInvoiceCacheService saleInvoiceCacheService;
 
-    @GetMapping
-    public ResponseEntity<ApiResponse<PageResult<SaleInvoiceResponse>>> search(
+    @GetMapping(produces = "application/json;charset=utf-8")
+    public String search(
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) OffsetDateTime startDate,
             @RequestParam(required = false) OffsetDateTime endDate,
@@ -44,14 +45,8 @@ public class SaleInvoiceController {
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int limit) {
 
-        PageResult<SaleInvoiceResponse> result = saleInvoiceService.search(
+        return saleInvoiceCacheService.searchAsJson(
                 keyword, startDate, endDate, customerId, stockId, employeeId, orderType, customerGroupId, page, limit);
-
-        return ResponseEntity.ok(ApiResponse.<PageResult<SaleInvoiceResponse>>builder()
-                .code(200)
-                .message("Success")
-                .data(result)
-                .build());
     }
 
     @GetMapping("/{id}")

@@ -97,4 +97,14 @@ public interface SaleInvoiceRepository extends JpaRepository<SaleInvoiceEntity, 
         GROUP BY c."customerCode", c."fullName"
     """, nativeQuery = true)
     List<com.example.GasTuanDat.report.dtos.CustomerReportDTO> getCustomerReport(@org.springframework.data.repository.query.Param("startDate") OffsetDateTime startDate, @org.springframework.data.repository.query.Param("endDate") OffsetDateTime endDate);
+
+    @Query(value = """
+        SELECT
+            COUNT(s."invoiceId") as invoices,
+            COALESCE(SUM(s."totalAmount" - COALESCE(s."discountAmount", 0)), 0) as revenue,
+            COALESCE(SUM(s."paidAmount"), 0) as receipts
+        FROM "SaleInvoice" s
+        WHERE s."invoiceDate" >= :startDate AND s."invoiceDate" <= :endDate AND CAST(s."orderType" AS text) = 'Xuathang'
+    """, nativeQuery = true)
+    com.example.GasTuanDat.report.dtos.DashboardSummaryDTO getDashboardSummary(@org.springframework.data.repository.query.Param("startDate") OffsetDateTime startDate, @org.springframework.data.repository.query.Param("endDate") OffsetDateTime endDate);
 }

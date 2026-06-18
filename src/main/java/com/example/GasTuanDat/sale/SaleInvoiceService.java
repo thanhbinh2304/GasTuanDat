@@ -61,7 +61,7 @@ public class SaleInvoiceService {
     private final InventoryRepository inventoryRepository;
 
     @Transactional
-    @CacheEvict(value = "reports", allEntries = true)
+    @CacheEvict(value = {"reports", "sale_invoices"}, allEntries = true)
     public SaleInvoiceResponse create(SaleInvoiceCreateRequest request) {
         SaleInvoiceEntity entity = saleInvoiceMapper.toEntity(request);
         
@@ -129,7 +129,7 @@ public class SaleInvoiceService {
     }
 
     @Transactional
-    @CacheEvict(value = "reports", allEntries = true)
+    @CacheEvict(value = {"reports", "sale_invoices"}, allEntries = true)
     public SaleInvoiceResponse update(UUID invoiceId, SaleInvoiceUpdateRequest request) {
         SaleInvoiceEntity entity = saleInvoiceRepository.findById(invoiceId)
                 .orElseThrow(() -> new ApiException(ErrorCode.SALE_INVOICE_NOT_FOUND));
@@ -240,7 +240,7 @@ public class SaleInvoiceService {
     }
 
     @Transactional
-    @CacheEvict(value = "reports", allEntries = true)
+    @CacheEvict(value = {"reports", "sale_invoices"}, allEntries = true)
     public void delete(UUID invoiceId) {
         SaleInvoiceEntity entity = saleInvoiceRepository.findById(invoiceId)
                 .orElseThrow(() -> new ApiException(ErrorCode.SALE_INVOICE_NOT_FOUND));

@@ -54,4 +54,16 @@ public interface SaleInvoiceDetailRepository extends JpaRepository<SaleInvoiceDe
           AND LOWER(c."categoryName") LIKE '%bình gas%'
     """, nativeQuery = true)
     Integer countTotalGasCylindersForGasBook(@Param("gasBookId") UUID gasBookId);
+
+    @Query(value = """
+        SELECT COALESCE(SUM(d."quantity"), 0)
+        FROM "InvoiceDetail" d
+        JOIN "SaleInvoice" s ON d."invoiceId" = s."invoiceId"
+        JOIN "Product" p ON d."productId" = p."productId"
+        JOIN "ProductCategory" c ON p."categoryId" = c."categoryId"
+        WHERE s."invoiceDate" >= :startDate AND s."invoiceDate" <= :endDate
+          AND CAST(s."orderType" AS text) = 'Xuathang'
+          AND LOWER(c."categoryName") LIKE '%bình gas%'
+    """, nativeQuery = true)
+    Integer countTotalGasCylindersForDateRange(@Param("startDate") OffsetDateTime startDate, @Param("endDate") OffsetDateTime endDate);
 }
