@@ -18,7 +18,7 @@ Hệ thống Backend (RESTful API) phục vụ phần mềm Quản lý Phân ph�
 - **Cơ sở dữ liệu:** PostgreSQL (Spring Data JPA / Hibernate)
 - **Caching:** Caffeine Cache
 - **Build Tool:** Gradle
-- **Containerization:** Docker & Docker Compose
+- **Containerization:** Docker
 
 ## 🏛️ Kiến trúc và Cấu trúc dự án
 
