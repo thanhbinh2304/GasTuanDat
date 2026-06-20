@@ -13,5 +13,5 @@ WORKDIR /app
 COPY --from=build /app/build/libs/*.jar app.jar
 # Expose port (Render defaults to 10000 or reads from PORT env)
 EXPOSE 8080
-# Run the application
-ENTRYPOINT ["java", "-jar", "app.jar"]
+# Run the application with memory limits suitable for 2GB VPS
+ENTRYPOINT ["java", "-Xmx512m", "-Xms256m", "-XX:MaxMetaspaceSize=256m", "-jar", "app.jar"]
