@@ -21,13 +21,13 @@ services:
 
   frontend:
     build:
-      context: ../kiotviet-dashboard
+      context: ../Fe-GasTuanDat
       dockerfile: Dockerfile
     container_name: gastuandat_frontend
     ports:
       - "3000:3000"
     env_file:
-      - ../kiotviet-dashboard/.env
+      - ../Fe-GasTuanDat/.env
     restart: always
     depends_on:
       - backend
